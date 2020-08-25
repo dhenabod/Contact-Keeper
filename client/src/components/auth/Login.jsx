@@ -1,6 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
-const Login = () => {
+import AlertContext from "../../context/alert/alertContext";
+import AuthContext from "../../context/auth/authContext";
+
+const Login = (props) => {
+    const alertContext = useContext(AlertContext);
+    const { setAlert } = alertContext;
+
+    const authContext = useContext(AuthContext);
+    const { login, error, clearErrors, isAuthenticated } = authContext;
+
+    useEffect(() => {
+        // redirect if isAuthenticated is true
+        if (isAuthenticated) {
+            props.history.push("/");
+        }
+
+        if (error === "Invalid Credentials") {
+            setAlert(error, "danger");
+            clearErrors();
+        }
+        // put error as a dependency so it will run whenever the error changes
+        // eslint-disable-next-line
+    }, [error, isAuthenticated, props.history]);
+
     const [user, setUser] = useState({
         email: "",
         password: "",
@@ -12,7 +35,11 @@ const Login = () => {
 
     const onsubmitHandler = (event) => {
         event.preventDefault();
-        console.log("login submit");
+        if (email === "" || password === "") {
+            setAlert("Please fill in all fields", "danger");
+        } else {
+            login({ email, password });
+        }
     };
 
     const { email, password } = user;
@@ -28,6 +55,7 @@ const Login = () => {
                         type="email"
                         name="email"
                         value={email}
+                        required
                         onChange={onChangeHandler}
                     ></input>
                 </div>
@@ -37,6 +65,7 @@ const Login = () => {
                         type="password"
                         name="password"
                         value={password}
+                        required
                         onChange={onChangeHandler}
                     ></input>
                 </div>

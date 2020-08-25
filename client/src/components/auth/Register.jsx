@@ -3,21 +3,27 @@ import React, { useState, useContext, useEffect } from "react";
 import AlertContext from "../../context/alert/alertContext";
 import AuthContext from "../../context/auth/authContext";
 
-const Register = () => {
+const Register = (props) => {
     const alertContext = useContext(AlertContext);
     const { setAlert } = alertContext;
 
     const authContext = useContext(AuthContext);
-    const { register, error, clearErrors } = authContext;
+    const { register, error, clearErrors, isAuthenticated } = authContext;
 
     //The idea to use useEffect hook is to execute code that needs happens during lifecycle of the component instead of on specific user interactions or DOM events
     useEffect(() => {
+        // redirect if isAuthenticated is true
+        if (isAuthenticated) {
+            props.history.push("/");
+        }
+
         if (error === "User already exists") {
             setAlert(error, "danger");
             clearErrors();
         }
         // put error as a dependency so it will run whenever the error changes
-    }, [error]);
+        // eslint-disable-next-line
+    }, [error, isAuthenticated, props.history]);
 
     const [user, setUser] = useState({
         name: "",
