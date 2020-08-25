@@ -34,7 +34,7 @@ router.post(
 
             // checks if user already exist
             if (user) {
-                return res.status(400).json({ msg: "Exist already exists" });
+                return res.status(400).json({ msg: "User already exists" });
             }
 
             // if user doesn't exist set the user as New User
